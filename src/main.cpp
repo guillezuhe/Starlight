@@ -1,4 +1,5 @@
 #include <FastLED.h>
+#include <Preferences.h>
 
 #define NUM_LEDS 83      // 8x8 matrix
 #define DATA_PIN 5       // GPIO5
@@ -28,31 +29,24 @@ int Mode = 1;
 // 0 menu, 1 adjust star type, 2 adjust brightness, 3 adjust noise strength
 int menuSelection = 1; 
 
-// Star type tracking (0=O hottest to 6=M coldest)
-int currentStarType = 0;  // Start at type F (index 3)
-
-// Brigthness control
-int brightness = BRIGHTNESS;
-
-// Noise strength (for star twinkling)
-int noise_str = 0;
-
 // Button parameters
 uint32_t lastButtonPress = 0;
 int prevButtonStateP = HIGH;
 const uint32_t DEBOUNCE_TIME = 200;  // milliseconds
 
 // Include files
+#include "state_manager.hpp"
+
+// State manager instance
+StateManager stateManager;
+
 #include "utilities.hpp"
 #include "patterns.hpp"
 
-/*******************
- * DIFFERENT STARS AS A FUNCTION OF COLOR TEMPERATURE
- *******************/
-
 // Display current star type
 void displayCurrentStar() {
-  switch (currentStarType) {
+  int starType = stateManager.getStarType();
+  switch (starType) {
     case 0: type_O_star(); break;
     case 1: type_B_star(); break;
     case 2: type_A_star(); break;
@@ -83,17 +77,20 @@ void handleButtonPresses() {
         if (menuSelection > 3) menuSelection = 1;  // Wrap around
       } else if (Mode == 1) {
         // Short press: decrease star type
-        currentStarType++;
-        if (currentStarType > 7) currentStarType = 0;  // Wrap around
+        int newStarType = stateManager.getStarType() + 1;
+        if (newStarType > 7) newStarType = 0;  // Wrap around
+        stateManager.setStarType(newStarType);
       } else if (Mode == 2) {
         // Short press: increase brightness
-        brightness += 10;
-        if (brightness > 100) brightness = 10;  // Wrap around
-        FastLED.setBrightness(brightness);
+        int newBrightness = stateManager.getBrightness() + 10;
+        if (newBrightness > 100) newBrightness = 10;  // Wrap around
+        stateManager.setBrightness(newBrightness);
+        FastLED.setBrightness(newBrightness);
       } else if (Mode == 3) {
         // Short press: Increase noise strength
-        noise_str += 25;
-        if (noise_str > 75) noise_str = 0;  // Cap noise strength
+        int newNoiseStr = stateManager.getNoiseStr() + 25;
+        if (newNoiseStr > 75) newNoiseStr = 0;  // Cap noise strength
+        stateManager.setNoiseStr(newNoiseStr);
       }
     } else if (holdDuration >= 1000) { // PULSACION LARGA
       if (Mode == 0) {
@@ -158,6 +155,9 @@ void setup() {
   Serial.begin(115200);
   pinMode(pinButtonP, INPUT_PULLUP);
 
+  // Initialize state manager (loads saved state from flash)
+  stateManager.begin();
+
   // Setup RGB button led PWM
   ledcSetup(channelR, frequency, resolution);
   ledcSetup(channelG, frequency, resolution);
@@ -168,10 +168,24 @@ void setup() {
 
   // FastLED setup
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
-  FastLED.setBrightness(BRIGHTNESS);
-  fill_solid(leds, NUM_LEDS, CRGB::Red);
+  FastLED.setBrightness(stateManager.getBrightness());
+
+  // Initial animation: Radial red
+  for (int i = 0; i < r1; i++) leds[i] = CRGB::Red;
   FastLED.show();
-  delay(5000);
+  delay(250);
+  FastLED.clear();
+  for (int i = r1; i < r1+r2; i++) leds[i] = CRGB::Red;
+  FastLED.show();
+  delay(250);
+  FastLED.clear();
+  for (int i = r1+r2; i < r1+r2+r3; i++) leds[i] = CRGB::Red;
+  FastLED.show();
+  delay(250);
+  FastLED.clear();
+  for (int i = r1+r2+r3; i < NUM_LEDS; i++) leds[i] = CRGB::Red;
+  FastLED.show();
+  delay(250);
 }
 
 void loop() {
@@ -179,6 +193,9 @@ void loop() {
   // Handle button presses to change star type
   handleButtonPresses();
   handleButtonLed();
+  
+  // Handle deferred state saves (batched to minimize flash wear)
+  stateManager.update();
   
   // Display current star type
   displayCurrentStar();

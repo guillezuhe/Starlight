@@ -8,6 +8,7 @@ void type_O_star() {
   // fill_solid(leds, NUM_LEDS, CRGB::Blue);
 
   CRGB basecolor = CRGB::Blue;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -32,6 +33,7 @@ void type_B_star() {
   // Blue-white star
   //fill_solid(leds, NUM_LEDS, CRGB::Cyan);
   CRGB basecolor = CRGB::Cyan;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -56,6 +58,7 @@ void type_A_star() {
   // White star
   //fill_solid(leds, NUM_LEDS, CRGB::White);
   CRGB basecolor = CRGB::White;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -81,6 +84,7 @@ void type_F_star() {
   //fill_solid(leds, NUM_LEDS, CRGB(255, 255, 60)); // RGB (255, 255, 200);
 
   CRGB basecolor = CRGB(255, 255, 60);
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -106,6 +110,7 @@ void type_G_star() {
   //fill_solid(leds, NUM_LEDS, CRGB::Yellow);
 
   CRGB basecolor = CRGB::Yellow;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -130,6 +135,7 @@ void type_K_star() {
   // Orange star
   //fill_solid(leds, NUM_LEDS, CRGB::DarkOrange); // Orange
   CRGB basecolor = CRGB::DarkOrange;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -156,6 +162,7 @@ void type_M_star() {
   //fill_solid(leds, NUM_LEDS, CRGB::OrangeRed);
 
   CRGB basecolor = CRGB::OrangeRed;
+  int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
   for (int i = 0; i < NUM_LEDS; i++) {
