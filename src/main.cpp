@@ -121,46 +121,35 @@ void handleButtonLed() {
   
 
   if (Mode == 0) { // In config menu
+    // Remember is common anode RGB LED so the real values are inverted
     // Breathing effect for button LED
     int strength = sin (currentTime / 1000.0 * 3.14) * 127 + 128; // 1-255
     if (menuSelection == 1) {
       // Star type selection - Green
-      ledcWrite(channelR, 0);
-      ledcWrite(channelG, strength);
-      ledcWrite(channelB, 0);
+      setCommonAnodeColor(0, strength, 0);
     } else if (menuSelection == 2) {
       // Brightness adjustment - Blue
-      ledcWrite(channelR, 0);
-      ledcWrite(channelG, 0);
-      ledcWrite(channelB, strength);
+      setCommonAnodeColor(0, 0, strength);
     } else if (menuSelection == 3) {
       // Noise strength adjustment - Red
-      ledcWrite(channelR, strength);
-      ledcWrite(channelG, 0);
-      ledcWrite(channelB, 0);
+      setCommonAnodeColor(strength, 0, 0);
     }
   } else if (Mode == 2) {
     // In brightness adjustment mode - Blue solid
-    ledcWrite(channelR, 0);
-    ledcWrite(channelG, 0);
-    ledcWrite(channelB, 200);
+    setCommonAnodeColor(0, 0, 200);
   } else if (Mode == 3) {
     // In noise strength adjustment mode - Red solid
-    ledcWrite(channelR, 200);
-    ledcWrite(channelG, 0);
-    ledcWrite(channelB, 0);
+    setCommonAnodeColor(200, 0, 0);
   } 
   else {
     // Star mode - off
-    ledcWrite(channelR, 0);
-    ledcWrite(channelG, 0);
-    ledcWrite(channelB, 0);
+    setCommonAnodeColor(0, 0, 0);
   }
 }
 
 
 void setup() {
-  Serial.begin(115200);
+  //Serial.begin(115200);
   SPIFFS.begin();
   pinMode(pinButtonP, INPUT_PULLUP);
 
@@ -180,19 +169,19 @@ void setup() {
   FastLED.setBrightness(stateManager.getBrightness());
 
   // Initial animation: Radial red
-  for (int i = 0; i < r1; i++) leds[i] = CRGB::Red;
+  for (int i = 0; i < r4; i++) leds[i] = CRGB::Red;
   FastLED.show();
   delay(250);
   FastLED.clear();
-  for (int i = r1; i < r1+r2; i++) leds[i] = CRGB::Red;
+  for (int i = r4; i < r4+r3; i++) leds[i] = CRGB::Red;
   FastLED.show();
   delay(250);
   FastLED.clear();
-  for (int i = r1+r2; i < r1+r2+r3; i++) leds[i] = CRGB::Red;
+  for (int i = r4+r3; i < r4+r3+r2; i++) leds[i] = CRGB::Red;
   FastLED.show();
   delay(250);
   FastLED.clear();
-  for (int i = r1+r2+r3; i < NUM_LEDS; i++) leds[i] = CRGB::Red;
+  for (int i = r4+r3+r2; i < NUM_LEDS; i++) leds[i] = CRGB::Red;
   FastLED.show();
   delay(250);
 

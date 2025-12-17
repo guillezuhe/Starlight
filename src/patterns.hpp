@@ -83,7 +83,7 @@ void type_F_star() {
   // Yellow-white star
   //fill_solid(leds, NUM_LEDS, CRGB(255, 255, 60)); // RGB (255, 255, 200);
 
-  CRGB basecolor = CRGB(255, 255, 60);
+  CRGB basecolor = CRGB(255, 255, 50);
   int noise_str = stateManager.getNoiseStr();
 
   // Add random noise
@@ -161,7 +161,7 @@ void type_M_star() {
   // Red star
   //fill_solid(leds, NUM_LEDS, CRGB::OrangeRed);
 
-  CRGB basecolor = CRGB::OrangeRed;
+  CRGB basecolor = CRGB(255, 40, 0);
   int noise_str = stateManager.getNoiseStr();
 
   // Add random noise

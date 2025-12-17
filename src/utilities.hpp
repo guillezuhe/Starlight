@@ -8,3 +8,10 @@ uint16_t XY(uint8_t x, uint8_t y) {
     return (y * MATRIX_WIDTH) + x;
   }
 }
+
+void setCommonAnodeColor(int r, int g, int b) {
+  // Invert values for common anode LED
+  ledcWrite(channelR, 255 - r);
+  ledcWrite(channelG, 255 - g);
+  ledcWrite(channelB, 255 - b);
+}

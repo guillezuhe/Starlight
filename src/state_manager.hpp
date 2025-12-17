@@ -59,13 +59,14 @@ public:
     savedStarType = currentStarType;
     savedBrightness = brightness;
     savedNoiseStr = noiseStr;
-    
+    /*
     Serial.print("[StateManager] Loaded state: starType=");
     Serial.print(currentStarType);
     Serial.print(" brightness=");
     Serial.print(brightness);
     Serial.print(" noiseStr=");
     Serial.println(noiseStr);
+    */
   }
   
   /**
@@ -128,8 +129,8 @@ private:
   
   void _markForSave() {
     lastSaveTime = millis();
-    //pendingSave = true;
-    pendingSave = false; //TODO: disable deferred save for testing
+    pendingSave = true;
+    //pendingSave = false; //TODO: disable deferred save for testing
   }
   
   void _performSave() {
@@ -144,12 +145,13 @@ private:
     savedStarType = currentStarType;
     savedBrightness = brightness;
     savedNoiseStr = noiseStr;
-    
+    /*
     Serial.print("[StateManager] Saved state: starType=");
     Serial.print(currentStarType);
     Serial.print(" brightness=");
     Serial.print(brightness);
     Serial.print(" noiseStr=");
     Serial.println(noiseStr);
+    */
   }
 };
