@@ -1,6 +1,4 @@
-# Starlight
-
-*para Blanca*
+![Starlight](Starlight.svg)
 
 ## Componentes de la lámpara
 
@@ -32,12 +30,49 @@ En el modo por defecto el led del botón (3) se encuentra apagado en todo moment
 | M | Rojo |
 | Enana negra | Apagado |
 
-Una pulsación larga en el botón permite entrar al **modo configuración**.
+### Configuración remota
 
+Nos encontramos ante la primera estrella con conectividad WiFi. Las poderosas ondas electromagnéticas procedentes del mismo núcleo generan una red WiFi llamada `Starlight-BMC` a la que puedes conectarte para controlar la lámpara desde la comodidad de tu dispositivo preferido: Móvil, ordenador, Nintendo DS o nevera inteligente.
 
+Para mayor seguridad, la red se encuentra protegida mediante las siguientes credenciales. De esta manera el Mossad no puede conectarse desde el piso de abajo y causar una supernova.
 
-Cuando se actualice por primera vez el estado de la lámpara, trascurrirán 10s hasta que se almacene en su memoria y poder recuperarlo al encender. Esto ocurre así para evitar el desgaste excesivo por escritura de la memoria permanente ante múltiples cambios consecutivos.
+SSID: `Starlight-BMC` <br> Contraseña: `lamparita.7`
 
+Una vez conectada a la red de la lámpara, puedes acceder a la interfaz de control a través de la siguiente dirección web en cualquier navegador.
+
+Dirección web: `192.168.7.7`
+
+Ahí encontrarás esta interfaz.
+
+![Interfaz](Interface.PNG)
+
+Ahí podrás configurar todos los parámetros de la estrella. El **tipo espectral** permite ajustar el color de emisión estelar. La Enana Negra, a pesar de parecer un intento de inclusión de minorías, se trata del hipotético estado en el que una enana blanca se enfría por completo dejando de emitir. El universo no tiene la edad suficiente para que esto haya podido ocurrir aún, pero este pequeño reactor de fusión va adelantado a los tiempos.
+
+La **magnitud absoluta** permite ajustar la iluminación de la estrella. El rango de valores posibles va desde +20 (las estrellas enanas más débiles) hasta -10 (las supergigantes más luminosas). Puesto que medir 10pc es complicado sin salir de Almería, la definición estricta de magnitud absoluta se ha reescalado de la siguiente manera:
+
+*La magnitud absoluta (M) es la magnitud aparente, m, que tendría un objeto si estuviera a una distancia *~~de 10 pársecs~~* equivalente a la separación entre el escritorio y la cama.*
+
+La **actividad estelar** permite ajustar la dinámica de emisión. Viene caracterizada por el número de Rossby, el ratio entre la fuerza de aceleración y la fuerza de Coriolis en un fluido. Valores más bajos indican una mayor actividad atmosférica debido a mayor rotación 
+
+### Configuración manual
+
+Una pulsación corta en el botón en en el modo por defecto (led del botón apagado) permite alternar el tipo espectral de la estrella. Una pulsación larga en el botón permite entrar al **modo configuración**. El led del botón comenzará a parpadear.
+
+El modo configuración permite alterar los 3 parámetros de control de la estrella, cada uno asociado con un color del botón. Una pulsación corta en este menú de configuración permite alternar el parámetro a configurar. Una vez seleccionado el parámetro a ajustar mediante el color correspondiente (ver siguiente tabla), una pulsación larga permite entrar en el ajuste del mismo. 
+
+| Color del botón | Parámetro |
+| - | - |
+| Verde | Tipo espectral (por defecto) |
+| Azul | Magnitud absoluta |
+| Rojo | Actividad estelar |
+
+En el modo **por defecto** se ajusta el **tipo espectral**, comentado anteriormente. En este modo, el led del botón se apagará para disfrutar sin cortapisas de la radiación estelar. Un toque corto al botón alterna el tipo espectral (color) de la estrella.
+
+En el ajuste de **magnitud absoluta** (botón azul) puedes cambiar el brillo de la lámpara. Un toque corto al botón incrementará el brillo hasta alcanzar el máximo, volviendo posteriormente al valor más bajo. En configuración manual, la lámpara cuenta con 10 pasos de brillo.
+
+En el ajuste de **actividad estelar** (botón rojo) puedes cambiar la dinámica de la estrella, simulando erupciones y dinámica atmosférica, añadiendo un ruido a la emisión. Un toque corto al botón incrementará la actividad estelar hasta alcanzar el máximo, volviendo posteriormente al valor más bajo. Existen 4 pasos de ruido.
+
+**Nota del desarrollador.** Cuando se actualice por primera vez el estado de la lámpara, trascurrirán 10s hasta que se almacene en su memoria y poder recuperarlo al encender. Esto ocurre así para evitar el desgaste excesivo por escritura de la memoria permanente ante múltiples cambios consecutivos.
 
 #### Precauciones de seguridad
 
