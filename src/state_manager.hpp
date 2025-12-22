@@ -104,7 +104,7 @@ public:
   }
   
   void setNoiseStr(int value) {
-    if (value >= 0 && value <= 75 && noiseStr != value) {
+    if (value >= 0 && value <= 125 && noiseStr != value) {
       noiseStr = value;
       _markForSave();
     }
@@ -118,6 +118,10 @@ public:
       _performSave();
       pendingSave = false;
     }
+  }
+
+  void clearPreferences() {
+    preferences.clear();  // Clears all keys in the namespace
   }
   
 private:

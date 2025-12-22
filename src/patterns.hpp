@@ -1,107 +1,159 @@
 #include <FastLED.h>
+#include <vector>
 
 CRGB leds[NUM_LEDS];
 uint8_t hue = 0;
+int iter = 0;
+int niter = 50;
+int niter_def = 50;
+
+// Store the value of the previous state of the leds
+std::vector<CRGB> prev_state(NUM_LEDS, CRGB::Black);
+std::vector<CRGB> next_state(NUM_LEDS, CRGB::Black);
+
 
 void type_O_star() {
   // Blueish star
   // fill_solid(leds, NUM_LEDS, CRGB::Blue);
 
-  CRGB basecolor = CRGB::Blue;
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB::Blue;
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
 
 void type_B_star() {
   // Blue-white star
   //fill_solid(leds, NUM_LEDS, CRGB::Cyan);
-  CRGB basecolor = CRGB::Cyan;
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB::Cyan;
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
 
 void type_A_star() {
   // White star
   //fill_solid(leds, NUM_LEDS, CRGB::White);
-  CRGB basecolor = CRGB::White;
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB::White;
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
 
 void type_F_star() {
   // Yellow-white star
   //fill_solid(leds, NUM_LEDS, CRGB(255, 255, 60)); // RGB (255, 255, 200);
-
-  CRGB basecolor = CRGB(255, 255, 50);
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB(255, 255, 50);
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
 
@@ -109,79 +161,111 @@ void type_G_star() {
   // Yellow star
   //fill_solid(leds, NUM_LEDS, CRGB::Yellow);
 
-  CRGB basecolor = CRGB::Yellow;
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB::Yellow;
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
 
 void type_K_star() {
   // Orange star
   //fill_solid(leds, NUM_LEDS, CRGB::DarkOrange); // Orange
-  CRGB basecolor = CRGB::DarkOrange;
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
-  for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB::DarkOrange;
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4); // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
   }
-
+  // Define the interpolation
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
+  }
 }
 
 void type_M_star() {
   // Red star
   //fill_solid(leds, NUM_LEDS, CRGB::OrangeRed);
-
-  CRGB basecolor = CRGB(255, 40, 0);
-  int noise_str = stateManager.getNoiseStr();
-
-  // Add random noise
+  iter++;
+  if (iter >= niter) {
+    CRGB basecolor = CRGB(255, 40, 0);
+    int noise_str = stateManager.getNoiseStr();
+    niter = int(niter_def - noise_str / 4);  // Adjust niter based on noise_str
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+      // Generate random offset (0 to noise_str*2), then subtract noise_str
+      int8_t offset_r = random8(noise_str * 2) - noise_str;
+      int8_t offset_g = random8(noise_str * 2) - noise_str;
+      int8_t offset_b = random8(noise_str * 2) - noise_str;
+      
+      // Use qadd8/qsub8 for saturating math (clamps to 0-255)
+      if (offset_r >= 0) next_state[i].r = qadd8(basecolor.r, offset_r);
+      else next_state[i].r = qsub8(basecolor.r, -offset_r);
+      
+      if (offset_g >= 0) next_state[i].g = qadd8(basecolor.g, offset_g);
+      else next_state[i].g = qsub8(basecolor.g, -offset_g);
+      
+      if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
+      else next_state[i].b = qsub8(basecolor.b, -offset_b);
+    }
+  }
+  // Define the interpolation
   for (int i = 0; i < NUM_LEDS; i++) {
-    // Generate random offset (0 to noise_str*2), then subtract noise_str
-    int8_t offset_r = random8(noise_str * 2) - noise_str;
-    int8_t offset_g = random8(noise_str * 2) - noise_str;
-    int8_t offset_b = random8(noise_str * 2) - noise_str;
-    
-    // Use qadd8/qsub8 for saturating math (clamps to 0-255)
-    if (offset_r >= 0) leds[i].r = qadd8(basecolor.r, offset_r);
-    else leds[i].r = qsub8(basecolor.r, -offset_r);
-    
-    if (offset_g >= 0) leds[i].g = qadd8(basecolor.g, offset_g);
-    else leds[i].g = qsub8(basecolor.g, -offset_g);
-    
-    if (offset_b >= 0) leds[i].b = qadd8(basecolor.b, offset_b);
-    else leds[i].b = qsub8(basecolor.b, -offset_b);
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter);
   }
 }
+
 
 void off_start() {
   fill_solid(leds, NUM_LEDS, CRGB::Black);

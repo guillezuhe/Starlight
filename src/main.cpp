@@ -97,7 +97,7 @@ void handleButtonPresses() {
       } else if (Mode == 3) {
         // Short press: Increase noise strength
         int newNoiseStr = stateManager.getNoiseStr() + 25;
-        if (newNoiseStr > 75) newNoiseStr = 0;  // Cap noise strength
+        if (newNoiseStr > 125) newNoiseStr = 0;  // Cap noise strength
         stateManager.setNoiseStr(newNoiseStr);
       }
     } else if (holdDuration >= 1000) { // PULSACION LARGA
@@ -205,5 +205,5 @@ void loop() {
   // Display current star type
   displayCurrentStar();
   FastLED.show();
-  FastLED.delay(100);  // 50 fps
+  FastLED.delay(10);  // 100 fps
 }

@@ -36,8 +36,8 @@ void setupServer() {
       // Transform from Rossby number to noise strength
       // First linearize from [0.1, 10] to [-1, 1]
       value = log10(value);
-      // Then map to [0, 75] and convert to int
-      value = -75 / 2 * value + 75 / 2;
+      // Then map to [0, 125] and convert to int
+      value = -125 / 2 * value + 125 / 2;
       stateManager.setNoiseStr((int)value);
       //request->send(200, "text/plain", "Noise strength set to " + String(value));
       request->redirect("/");
