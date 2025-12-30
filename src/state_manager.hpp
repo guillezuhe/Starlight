@@ -162,6 +162,11 @@ public:
     sleepTimer = duration_ms;
     lastTimerActivation = millis();
   }
+
+  void deactivateTimer() {
+    timerOn = false;
+    pendingDeepSleep = false;
+  }
   
   /**
    * Force immediate save (useful for graceful shutdown)

@@ -148,13 +148,6 @@ void handleButtonLed() {
   }
 }
 
-void handleTimerSleep() {
-  // Check for timer-based sleep
-  if (stateManager.getTimerState() && stateManager.getPendingDeepSleep()) {
-    goToSleep();
-  }
-}
-
 void goToSleep() {
   FastLED.clear();
   FastLED.show();
@@ -163,6 +156,15 @@ void goToSleep() {
 
   esp_deep_sleep_start();
   // TODO: Implement the web interface to set the timer and duration
+  return;
+}
+
+void handleTimerSleep() {
+  // Check for timer-based sleep
+  if (stateManager.getTimerState() && stateManager.getPendingDeepSleep()) {
+    goToSleep();
+  }
+  return;
 }
 
 

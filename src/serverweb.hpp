@@ -1,9 +1,26 @@
+/*
+#include "state_manager.hpp"
+
+extern StateManager stateManager;
+*/
 AsyncWebServer server(80);
+
+String processor(const String& var) {
+  if (var == "TIMER_STATUS") {
+    if (stateManager.getTimerState()) {
+      return "<span class=\"timer-status\">⏱️ ON</span>";
+    }
+  }
+  return String();
+}
 
 void setupServer() {
 
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(SPIFFS, "/index.html", String(), false, processor);
+  });
 
-  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
+  server.serveStatic("/", SPIFFS, "/");
 
   server.on("/setStarType", [](AsyncWebServerRequest *request) {
     if (request->hasArg("type")) {
@@ -45,5 +62,20 @@ void setupServer() {
       request->send(400, "text/plain", "Missing 'value' parameter");
     }
   });
+
+  server.on("/setTimer", [](AsyncWebServerRequest *request) {
+    if (request->hasArg("value")) {
+      int value = request->arg("value").toInt();
+      // Set timer sleep duration in minutes
+      if (value < 1) value = 1;
+      if (value > 60) value = 60;
+      stateManager.activateTimer((unsigned long)value * 60000);
+      //request->send(200, "text/plain", "Sleep timer set to " + String(value) + " minutes");
+      request->redirect("/");
+    } else {
+      request->send(400, "text/plain", "Missing 'value' parameter");
+    }
+  });
+
   server.begin();
 }
