@@ -27,15 +27,21 @@ private:
   
   // Debounce timer to batch writes
   uint32_t lastSaveTime;
-  const uint32_t SAVE_DEBOUNCE_MS = 6000;  // Wait 6 seconds after last change before saving
+  const uint32_t SAVE_DEBOUNCE_MS = 10000;  // Wait 10 seconds after last change before saving
   
   bool pendingSave;
+
+  bool timerOn;
+  unsigned long lastTimerActivation;
+  unsigned long sleepTimer;
+  bool pendingDeepSleep;
   
 public:
   StateManager() 
     : currentStarType(0), brightness(10), noiseStr(0),
       savedStarType(-1), savedBrightness(-1), savedNoiseStr(-1),
-      lastSaveTime(0), pendingSave(false) {}
+      lastSaveTime(0), pendingSave(false), timerOn(false),
+      lastTimerActivation(0), sleepTimer(60000), pendingDeepSleep(false) {}
   
   /**
    * Initialize preferences storage and load saved state
@@ -54,6 +60,12 @@ public:
     if (currentStarType < 0 || currentStarType > 7) currentStarType = 0;
     if (brightness < 10 || brightness > 100) brightness = 10;
     if (noiseStr < 0 || noiseStr > 75) noiseStr = 0;
+
+    // Initialize timer parameters
+    timerOn = false;
+    lastTimerActivation = 0;
+    sleepTimer = 60000; // Default 1 minute
+    pendingDeepSleep = false;
     
     // Initialize saved state
     savedStarType = currentStarType;
@@ -81,12 +93,29 @@ public:
         pendingSave = false;
       }
     }
+
+    // Check for timer-based sleep
+    if (timerOn && !pendingDeepSleep) {
+      if (millis() - lastTimerActivation >= sleepTimer) {
+        // Time to go to sleep
+        pendingDeepSleep = true;
+        // Save state before sleeping
+        saveImmediately();
+        // Enter deep sleep (implementation depends on hardware)
+        // For ESP32:
+        //ESP.deepSleep(0);  // Sleep indefinitely //TODO: enable it in the main code turning off the leds and the button first. Also set a wake up source (button).
+      }
+    }
   }
   
   // Getters
   int getStarType() const { return currentStarType; }
   int getBrightness() const { return brightness; }
   int getNoiseStr() const { return noiseStr; }
+  bool getTimerState() const { return timerOn; }
+  int getSleepTimer() const { return sleepTimer; }
+  int getLastTimerActivation() const { return lastTimerActivation; }
+  bool getPendingDeepSleep() const { return pendingDeepSleep; }
   
   // Setters - Mark for save if changed
   void setStarType(int value) {
@@ -108,6 +137,30 @@ public:
       noiseStr = value;
       _markForSave();
     }
+  }
+
+  void setTimerState(bool state) {
+    if (timerOn != state) {
+      timerOn = state;
+      //_markForSave();
+    }
+  }
+
+  void setTimerSleep(unsigned long duration_ms) {
+    if (sleepTimer != duration_ms) {
+      sleepTimer = duration_ms;
+      //_markForSave();
+    }
+  }
+  
+  void setPendingDeepSleep(bool state) {
+    pendingDeepSleep = state;
+  }
+
+  void activateTimer(unsigned long duration_ms) {
+    timerOn = true;
+    sleepTimer = duration_ms;
+    lastTimerActivation = millis();
   }
   
   /**

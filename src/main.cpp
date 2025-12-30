@@ -4,6 +4,7 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <cmath>
+#include <esp_sleep.h>
 
 #include <SPIFFS.h>   // Include the SPIFFS library
 
@@ -62,7 +63,7 @@ void displayCurrentStar() {
     case 4: type_G_star(); break;
     case 5: type_K_star(); break;
     case 6: type_M_star(); break;
-    case 7: off_start(); break;
+    case 7: off_star(); break;
   }
 }
 
@@ -147,6 +148,23 @@ void handleButtonLed() {
   }
 }
 
+void handleTimerSleep() {
+  // Check for timer-based sleep
+  if (stateManager.getTimerState() && stateManager.getPendingDeepSleep()) {
+    goToSleep();
+  }
+}
+
+void goToSleep() {
+  FastLED.clear();
+  FastLED.show();
+  setCommonAnodeColor(0, 0, 0);
+  delay(500); // Ensure LEDs are off
+
+  esp_deep_sleep_start();
+  // TODO: Implement the web interface to set the timer and duration
+}
+
 
 void setup() {
   //Serial.begin(115200);
@@ -201,6 +219,9 @@ void loop() {
   
   // Handle deferred state saves (batched to minimize flash wear)
   stateManager.update();
+
+  // Handle timer-based deep sleep
+  handleTimerSleep();
   
   // Display current star type
   displayCurrentStar();

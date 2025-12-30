@@ -266,8 +266,28 @@ void type_M_star() {
   }
 }
 
+void off_star() {
+  // Red star
+  //fill_solid(leds, NUM_LEDS, CRGB::OrangeRed);
+  iter++;
+  if (iter >= niter_def) {
+    CRGB basecolor = CRGB(0, 0, 0);
+    iter = 0;
+    // Add random noise
+    for (int i = 0; i < NUM_LEDS; i++) {
+      prev_state[i] = next_state[i];
+    }
+  }
+  // Define the interpolation
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i].r = lerp8by8(prev_state[i].r, next_state[i].r, (iter * 256) / niter_def);
+    leds[i].g = lerp8by8(prev_state[i].g, next_state[i].g, (iter * 256) / niter_def);
+    leds[i].b = lerp8by8(prev_state[i].b, next_state[i].b, (iter * 256) / niter_def);
+  }
+}
 
-void off_start() {
+
+void off_star_deprecated() {  // TODO: Remove after testing
   fill_solid(leds, NUM_LEDS, CRGB::Black);
 }
 
