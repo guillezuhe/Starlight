@@ -31,17 +31,23 @@ private:
   
   bool pendingSave;
 
+  // Timer state
   bool timerOn;
   unsigned long lastTimerActivation;
   unsigned long sleepTimer;
   bool pendingDeepSleep;
   
+  // Animation state
+  bool animationOn;
+  int animationType;
+
 public:
   StateManager() 
     : currentStarType(0), brightness(10), noiseStr(0),
       savedStarType(-1), savedBrightness(-1), savedNoiseStr(-1),
       lastSaveTime(0), pendingSave(false), timerOn(false),
-      lastTimerActivation(0), sleepTimer(60000), pendingDeepSleep(false) {}
+      lastTimerActivation(0), sleepTimer(60000), pendingDeepSleep(false),
+      animationOn(false), animationType(0) {}
   
   /**
    * Initialize preferences storage and load saved state
@@ -66,6 +72,10 @@ public:
     lastTimerActivation = 0;
     sleepTimer = 60000; // Default 1 minute
     pendingDeepSleep = false;
+
+    // Animation mode
+    animationOn = false;
+    animationType = 0;
     
     // Initialize saved state
     savedStarType = currentStarType;

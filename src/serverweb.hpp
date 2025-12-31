@@ -1,8 +1,3 @@
-/*
-#include "state_manager.hpp"
-
-extern StateManager stateManager;
-*/
 AsyncWebServer server(80);
 
 String processor(const String& var) {
@@ -74,6 +69,21 @@ void setupServer() {
       request->redirect("/");
     } else {
       request->send(400, "text/plain", "Missing 'value' parameter");
+    }
+  });
+
+  server.on("/cancelTimer", [](AsyncWebServerRequest *request) {
+    stateManager.deactivateTimer();
+    request->redirect("/");
+  });
+
+  server.on("/startAnimation", [](AsyncWebServerRequest *request) {
+    if (request->hasArg("type")) {
+      int type = request->arg("type").toInt();
+      // TODO: set animation type and start
+      request->redirect("/");
+    } else {
+      request->send(400, "text/plain", "Missing 'name' parameter");
     }
   });
 

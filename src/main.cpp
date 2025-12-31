@@ -51,6 +51,7 @@ StateManager stateManager;
 #include "patterns.hpp"
 #include "wifisetup.hpp"
 #include "serverweb.hpp"
+#include "animation_manager.hpp"
 
 // Display current star type
 void displayCurrentStar() {
