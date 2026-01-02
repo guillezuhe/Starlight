@@ -2,14 +2,15 @@
 #include <vector>
 
 CRGB leds[NUM_LEDS];
+//std::array<CRGB, NUM_LEDS> leds;
 uint8_t hue = 0;
 int iter = 0;
 int niter = 50;
 int niter_def = 50;
 
 // Store the value of the previous state of the leds
-std::vector<CRGB> prev_state(NUM_LEDS, CRGB::Black);
-std::vector<CRGB> next_state(NUM_LEDS, CRGB::Black);
+std::array<CRGB, NUM_LEDS> prev_state = {CRGB::Black};
+std::array<CRGB, NUM_LEDS> next_state = {CRGB::Black};
 
 
 void type_O_star() {
@@ -39,6 +40,13 @@ void type_O_star() {
       
       if (offset_b >= 0) next_state[i].b = qadd8(basecolor.b, offset_b);
       else next_state[i].b = qsub8(basecolor.b, -offset_b);
+
+      // Alternative definition with constrain function
+      /*
+      next_state[i].r = constrain(int(basecolor.r) + offset_r, 0, 255);
+      next_state[i].g = constrain(int(basecolor.g) + offset_g, 0, 255);
+      next_state[i].b = constrain(int(basecolor.b) + offset_b, 0, 255);
+      */
     }
   }
   // Define the interpolation

@@ -49,9 +49,16 @@ StateManager stateManager;
 
 #include "utilities.hpp"
 #include "patterns.hpp"
+
+// Animation manager instance
+#include "animation_manager.hpp"
+
+AnimationController animCtrl;
+
+// Web server instance
 #include "wifisetup.hpp"
 #include "serverweb.hpp"
-#include "animation_manager.hpp"
+
 
 // Display current star type
 void displayCurrentStar() {
@@ -156,7 +163,6 @@ void goToSleep() {
   delay(500); // Ensure LEDs are off
 
   esp_deep_sleep_start();
-  // TODO: Implement the web interface to set the timer and duration
   return;
 }
 
@@ -226,8 +232,15 @@ void loop() {
   // Handle timer-based deep sleep
   handleTimerSleep();
   
-  // Display current star type
-  displayCurrentStar();
+  // Display current star type or animation
+  if (animCtrl.getIsPlaying()) {
+    // Animation mode
+    animCtrl.update();
+    animCtrl.render();
+  } else {
+    // Static star display
+    displayCurrentStar();
+  }
   FastLED.show();
   FastLED.delay(10);  // 100 fps
 }

@@ -80,11 +80,17 @@ void setupServer() {
   server.on("/startAnimation", [](AsyncWebServerRequest *request) {
     if (request->hasArg("type")) {
       int type = request->arg("type").toInt();
-      // TODO: set animation type and start
+      animCtrl.selectPathByIndex(type);
+      animCtrl.start();
       request->redirect("/");
     } else {
       request->send(400, "text/plain", "Missing 'name' parameter");
     }
+  });
+
+  server.on("/cancelAnimation", [](AsyncWebServerRequest *request) {
+    animCtrl.stop();
+    request->redirect("/");
   });
 
   server.begin();

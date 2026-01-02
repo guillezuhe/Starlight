@@ -115,6 +115,31 @@
       gap: 10px;
     }
 
+    .stop-btn{
+      border: none;
+      padding: 9px 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: #000;
+      text-shadow: 0 0 2px rgba(255,255,255,0.5);
+      width: 100%;
+      background: rgb(156, 0, 0); 
+      color: white;
+    }
+
+    .stop-btn:hover{
+      transform: scale(1.00);
+      box-shadow: 0 0 15px currentColor;      
+    }
+
+    .stop-anim{
+      margin-top: 1.0rem;
+      width:50%;
+      gap: 10px;
+    }
+
     .star-btn {
       border: none;
       padding: 10px;
@@ -164,7 +189,7 @@
       width: 80px;
     }
 
-    button[type="submit"]:not(.star-btn) {
+    button[type="submit"]:not(.star-btn):not(.stop-btn) {
       background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
       border: none;
       padding: 8px 16px;
@@ -266,7 +291,7 @@
           <button type="submit">Activar temporizador</button>
         </form>
         <form action="/cancelTimer" method="post">
-          <button type="submit" style="background: red; color: white;">Desactivar</button>
+          <button type="submit" class="stop-btn">Desactivar</button>
         </form>
       </div>
     </div>
@@ -280,6 +305,10 @@
           <button type="submit" name="type" value="1" class="star-btn mass-10">10 M☉</button>
           <button type="submit" name="type" value="2" class="star-btn mass-1">1 M☉</button>
           <button type="submit" name="type" value="3" class="star-btn mass-04">0.4 M☉</button>
+        </form>
+        <form action="/cancelAnimation" method="post">
+          <button type="submit" class="stop-anim stop-btn">Parar animación</button>
+        </form>
     </div>
   </div>
 

@@ -36,18 +36,13 @@ private:
   unsigned long lastTimerActivation;
   unsigned long sleepTimer;
   bool pendingDeepSleep;
-  
-  // Animation state
-  bool animationOn;
-  int animationType;
 
 public:
   StateManager() 
     : currentStarType(0), brightness(10), noiseStr(0),
       savedStarType(-1), savedBrightness(-1), savedNoiseStr(-1),
       lastSaveTime(0), pendingSave(false), timerOn(false),
-      lastTimerActivation(0), sleepTimer(60000), pendingDeepSleep(false),
-      animationOn(false), animationType(0) {}
+      lastTimerActivation(0), sleepTimer(60000), pendingDeepSleep(false) {}
   
   /**
    * Initialize preferences storage and load saved state
@@ -72,10 +67,6 @@ public:
     lastTimerActivation = 0;
     sleepTimer = 60000; // Default 1 minute
     pendingDeepSleep = false;
-
-    // Animation mode
-    animationOn = false;
-    animationType = 0;
     
     // Initialize saved state
     savedStarType = currentStarType;
@@ -111,9 +102,6 @@ public:
         pendingDeepSleep = true;
         // Save state before sleeping
         saveImmediately();
-        // Enter deep sleep (implementation depends on hardware)
-        // For ESP32:
-        //ESP.deepSleep(0);  // Sleep indefinitely //TODO: enable it in the main code turning off the leds and the button first. Also set a wake up source (button).
       }
     }
   }
