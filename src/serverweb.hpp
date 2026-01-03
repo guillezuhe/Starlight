@@ -1,21 +1,7 @@
 AsyncWebServer server(80);
 
-String processor(const String& var) {
-  if (var == "TIMER_STATUS") {
-    if (stateManager.getTimerState()) {
-      return "<span class=\"timer-status\">⏱️ ON</span>";
-    }
-  }
-  return String();
-}
-
 void setupServer() {
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(SPIFFS, "/index.html", String(), false, processor);
-  });
-
-  server.serveStatic("/", SPIFFS, "/");
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
   server.on("/setStarType", [](AsyncWebServerRequest *request) {
     if (request->hasArg("type")) {
@@ -91,6 +77,11 @@ void setupServer() {
   server.on("/cancelAnimation", [](AsyncWebServerRequest *request) {
     animCtrl.stop();
     request->redirect("/");
+  });
+
+  server.on("/getTimerState", [](AsyncWebServerRequest *request) {
+    String json = "{\"timerOn\":" + String(stateManager.getTimerState() ? "true" : "false") + "}";
+    request->send(200, "application/json", json);
   });
 
   server.begin();

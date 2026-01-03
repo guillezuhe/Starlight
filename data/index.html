@@ -16,6 +16,10 @@
       --accent-color: #4facfe;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       padding: 0;
@@ -136,7 +140,7 @@
 
     .stop-anim{
       margin-top: 1.0rem;
-      width:50%;
+      width:25%;
       gap: 10px;
     }
 
@@ -283,12 +287,12 @@
 
   <div class="container" style="margin-top: 2rem;">
     <div class="control-group">
-      <h2>Temporizador de apagado %TIMER_STATUS%</h2>
+      <h2>Temporizador de apagado <span id="timer-status" class="timer-status" style="display: none;"><span style="font-size: 1rem;">⏱️</span> ON</span></h2>
       <label>Tiempo. 1 a 60 min</label>
       <div class="input-group">
         <form action="/setTimer" method="post">
           <input type="number" name="value" min="1" max="60" placeholder="30" required />
-          <button type="submit">Activar temporizador</button>
+          <button type="submit">Activar</button>
         </form>
         <form action="/cancelTimer" method="post">
           <button type="submit" class="stop-btn">Desactivar</button>
@@ -307,7 +311,7 @@
           <button type="submit" name="type" value="3" class="star-btn mass-04">0.4 M☉</button>
         </form>
         <form action="/cancelAnimation" method="post">
-          <button type="submit" class="stop-anim stop-btn">Parar animación</button>
+          <button type="submit" class="stop-anim stop-btn">Parar</button>
         </form>
     </div>
   </div>
@@ -350,6 +354,26 @@
     }
 
     window.addEventListener('load', createStars);
+
+    // Fetch and display timer state
+    function updateTimerStatus() {
+      fetch('/getTimerState')
+        .then(response => response.json())
+        .then(data => {
+          const statusEl = document.getElementById('timer-status');
+          if (data.timerOn) {
+            statusEl.textContent = '⏱️ ON';
+            statusEl.style.display = 'inline-flex';
+          } else {
+            statusEl.style.display = 'none';
+          }
+        })
+        .catch(err => console.log('Error fetching timer state:', err));
+    }
+
+    // Update on page load and periodically
+    window.addEventListener('load', updateTimerStatus);
+    setInterval(updateTimerStatus, 5000);
   </script>
 </body>
 
