@@ -30,7 +30,7 @@ const AnimationKeyframe path_10Ms_stages[] = {
   {"Giant Star", CRGB::DarkOrange, 15, 70, 5000, 5000, 0},
   {"SuperGiant", CRGB::Orange, 50, 80, 10000, 0, 0},
   {"Supernova", CRGB::Orange, 100, 80, 700, 700, 3},
-  {"Neutron Star", CRGB::White, 5, 30, 10000, 5000, 2},
+  {"Neutron Star", CRGB::White, 5, 30, 15000, 5000, 2},
   {"Black", CRGB::Black, 0, 0, 3000, 0, 0}
 };
 
@@ -42,15 +42,15 @@ const AnimationKeyframe path_1Ms_stages[] = {
   {"Helium Flash", CRGB::Red, 10, 80, 700, 0, 3},
   {"SuperGiant", CRGB::Red, 5, 80, 5000, 5000, 4},
   {"Planetary Nebula", CRGB::Cyan, 15, 30, 5000, 5000, 1},
-  {"White Dwarf", CRGB::White, 5, 30, 5000, 5000, 4},
+  {"White Dwarf", CRGB::White, 5, 30, 8000, 5000, 4},
   {"Black", CRGB::Black, 0, 0, 3000, 0, 0}
 };
 
 const AnimationKeyframe path_04Ms_stages[] = {
-  {"Pre-Main Sequence", CRGB::Amethyst, 25, 40, 5000, 4000, 0},
-  {"Red Dwarf", CRGB::Red, 50, 70, 60000, 5000, 0},
-  {"Blue Dwarf", CRGB::Cyan, 15, 50, 5000, 5000, 0},
-  {"White Dwarf", CRGB::White, 5, 40, 5000, 5000, 4},
+  {"Pre-Main Sequence", CRGB::Amethyst, 25, 40, 5000, 4000, 1},
+  {"Red Dwarf", CRGB::Red, 40, 70, 60000, 5000, 0},
+  {"Blue Dwarf", CRGB::Cyan, 40, 50, 5000, 5000, 0},
+  {"White Dwarf", CRGB::White, 20, 40, 8000, 5000, 4},
   {"Black", CRGB::Black, 0, 0, 3000, 0, 0}
 };
 
@@ -131,6 +131,19 @@ public:
     : isPlaying(false), currentPathIndex(0), currentStageIndex(0),
       stageStartTime(0), stageProgress(0.0), next_noise_offsets{}, 
       prev_noise_offsets{} {}
+
+  void begin() {
+    isPlaying = false;
+    currentPathIndex = 0;
+    currentStageIndex = 0;
+    stageStartTime = 0;
+    stageProgress = 0.0;
+    // Initialize noise offsets
+    for (int i=0; i<NUM_LEDS; i++) {
+      next_noise_offsets[i] = {0, 0, 0};
+      prev_noise_offsets[i] = {0, 0, 0};
+    }
+  }
   
   // Select path by index
   void selectPathByIndex(uint8_t index) {
@@ -153,9 +166,11 @@ public:
   }
   
   void stop() {
-    isPlaying = false;
+    // Restore brightness to default
+    FastLED.setBrightness(10);
     currentStageIndex = 0;
     stageProgress = 0.0;
+    isPlaying = false;
   }
   
   void update() { // Call in loop()
@@ -179,10 +194,14 @@ public:
       
       // Check if animation is complete
       if (currentStageIndex >= path->numStages) {
+        /*
         isPlaying = false;
         currentStageIndex = 0;
         stageProgress = 0.0;
-        // stop();
+        // Restore brightness to default
+        FastLED.setBrightness(stateManager.getBrightness());
+        */
+        stop();
       }
     }
   }
@@ -242,9 +261,11 @@ public:
       fill_solid(leds, NUM_LEDS, interpColor);
     } else {
       for (int i=0; i<NUM_LEDS; i++) {
-        int r_offset = lerp8by8(prev_noise_offsets[i][0], next_noise_offsets[i][0], (iter_noise * 256) / n_iters_noise);
-        int g_offset = lerp8by8(prev_noise_offsets[i][1], next_noise_offsets[i][1], (iter_noise * 256) / n_iters_noise);
-        int b_offset = lerp8by8(prev_noise_offsets[i][2], next_noise_offsets[i][2], (iter_noise * 256) / n_iters_noise);
+        // Linear interpolation for signed offsets
+        uint8_t blend_factor = (iter_noise * 256) / n_iters_noise;
+        int r_offset = ((prev_noise_offsets[i][0] * (256 - blend_factor)) + (next_noise_offsets[i][0] * blend_factor)) >> 8;
+        int g_offset = ((prev_noise_offsets[i][1] * (256 - blend_factor)) + (next_noise_offsets[i][1] * blend_factor)) >> 8;
+        int b_offset = ((prev_noise_offsets[i][2] * (256 - blend_factor)) + (next_noise_offsets[i][2] * blend_factor)) >> 8;
         int r = constrain(int(interpColor.r) + r_offset, 0, 255);
         int g = constrain(int(interpColor.g) + g_offset, 0, 255);
         int b = constrain(int(interpColor.b) + b_offset, 0, 255);
@@ -291,7 +312,7 @@ public:
     // Implement pulse effect with full brightness modulation (on/off)
     // Predefined frequency of 1 Hz for pulse effect
     const float w = 6.28; // 1 Hz
-    uint8_t pulse = sin8(w * millis() / 1000.0) * FastLED.getBrightness() / 255; // 0-brightness
+    uint8_t pulse = sin(w * millis() / 1000.0) * 50 + 50; // 0-brightness
 
     FastLED.setBrightness(pulse);
   }
@@ -303,7 +324,7 @@ public:
     // the animation control.
     unsigned long elapsed = millis() - stageStartTime;
     if (elapsed <= 500) {
-      float progress = float(elapsed - 500) / 500.0;
+      float progress = float(elapsed) / 500.0;  // Fixed: progress from 0 to 1
       uint8_t brightness = lerp8by8(0, 200, uint8_t(progress * 255));
       FastLED.setBrightness(brightness);
     } else if (elapsed < 10000) { // Limit to 10 s for safety reasons

@@ -183,6 +183,8 @@ void setup() {
   // Initialize state manager (loads saved state from flash)
   stateManager.begin();
 
+  animCtrl.begin();
+
   // Setup RGB button led PWM
   ledcSetup(channelR, frequency, resolution);
   ledcSetup(channelG, frequency, resolution);
@@ -194,6 +196,8 @@ void setup() {
   // FastLED setup
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NUM_LEDS);
   FastLED.setBrightness(stateManager.getBrightness());
+  // Set maximum power consumption to 1000 mA
+  FastLED.setMaxPowerInVoltsAndMilliamps(5, 2800);
 
   // Initial animation: Radial red
   for (int i = 0; i < r4; i++) leds[i] = CRGB::Red;
